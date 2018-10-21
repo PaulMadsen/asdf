@@ -8,7 +8,7 @@ public class Chunk : MonoBehaviour {
     public const int CHUNK_PIECES = 8; //total virtical chunk pieces in a chunk
     public const int CHUNK_WIDTH = 16;
     public const int CHUNK_HEIGHT = 16;  //virtical blocks per chunk piece
-    private List<int[,,]> chunkSegments = new List<int[,,]>();
+    private List<BlockPair[,,]> chunkSegments = new List<BlockPair[,,]>();
     private bool meshDirty = true; //mesh needs (re)generated?
     //each virtical chunk piece has meshes, verts, triangles and UVs
     private List<MeshFilter> meshes = new List<MeshFilter>();
@@ -24,7 +24,7 @@ public class Chunk : MonoBehaviour {
         System.Random randy = new System.Random();
         for (int i = 0; i < CHUNK_PIECES; ++i)
         {
-            chunkSegments.Add(new int[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
+            chunkSegments.Add(new BlockPair[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
             GameObject chunkPiece = new GameObject("Chunk Piece " + i);
             meshes.Add(chunkPiece.AddComponent<MeshFilter>());
             MeshRenderer mr = chunkPiece.AddComponent<MeshRenderer>();
@@ -38,15 +38,15 @@ public class Chunk : MonoBehaviour {
                 for (int y = 0; y < CHUNK_WIDTH; ++y)
                     for (int z = 0; z < CHUNK_WIDTH; ++z)
                     {
-                        if (i > 1) continue;
+                        if (i > 1) continue; // chunkSegments[i][x, y, z] = new BlockPair(0);
                         if (i == 1 && y == 6) {
-                            
-                            if (randy.Next(0, 100) == 1) chunkSegments[i][x, y, z] = 1;                            
+
+                            if (randy.Next(0, 100) == 1) chunkSegments[i][x, y, z] = new BlockPair(1);
                         }
 
                         if (i == 1 && y > 5)
-                            continue; //cutting it short here
-                        chunkSegments[i][x, y, z] = 1;
+                            continue; // chunkSegments[i][x, y, z] = new BlockPair(0); //cutting it short here
+                        chunkSegments[i][x, y, z] = new BlockPair(1);
                     }            
         }
 
@@ -68,12 +68,13 @@ public class Chunk : MonoBehaviour {
 
         for (int i=0; i < CHUNK_PIECES; ++i)
         {
-            int[,,] chunkPiece = chunkSegments[i];
+            BlockPair[,,] chunkPiece = chunkSegments[i];
             for (int x=0; x<CHUNK_WIDTH; ++x)
                 for(int y=0; y<CHUNK_HEIGHT; ++y)
                     for(int z=0; z<CHUNK_WIDTH; ++z)
                     {
-                        if (chunkPiece[x,y,z] > 0)                            
+                        if (chunkPiece[x, y, z] != null && 
+                            chunkPiece[x,y,z].blockID > 0)                            
                         {
                             if (IsFaceVisible(x, y+1, z, i))
                                 AddFace(x, y, z, i, FaceDirection.top);
@@ -111,11 +112,13 @@ public class Chunk : MonoBehaviour {
         if (y >= CHUNK_HEIGHT) return true;
         if (y < 0) return true;
         if (z >= CHUNK_WIDTH) return true;
-        if (z < 0) return true;        
-        if (chunkSegments[segment][x,y,z] > 0) {     
+        if (z < 0) return true;
+
+        if (chunkSegments[segment][x, y, z] != null && 
+            chunkSegments[segment][x, y, z].blockID > 0)
+        {
             return false;
         }
-     
         return true;
     }
 
@@ -263,19 +266,14 @@ public class Chunk : MonoBehaviour {
         int x = (int)(pos.x / CHUNK_WIDTH);
         int y = (int)(pos.y % CHUNK_HEIGHT);
         int z = (int)(pos.z / CHUNK_WIDTH);
-        try { 
-         return chunkSegments[segment][x, y, z];
-        }
-        catch
-        {
-            Debug.Log(segment + " " + x + " " + y + " " + z);
-            return 0;
-        }
+        if (segment < 0 || segment >= chunkSegments.Count) return 0;
+        if (chunkSegments[segment][x, y, z] == null) return 0;
+        return chunkSegments[segment][x, y, z].blockID;
+        
         
     }
 }
 
 enum FaceDirection
 {    left, right, front, back, top, bottom  }
-
 

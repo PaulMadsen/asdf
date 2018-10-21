@@ -26,8 +26,8 @@ public class World : MonoBehaviour {
                 chunk.transform.position = new Vector3(chunkX * WIDTH, 0, chunkZ * WIDTH);
                 Vector2 cPos = new Vector2(chunkX, chunkZ);                                
                 allBlocks.Add(cPos, c);
-                MeshFilter mf = chunk.AddComponent<MeshFilter>();
-                MeshRenderer mr = chunk.AddComponent<MeshRenderer>();
+                chunk.AddComponent<MeshFilter>();
+                chunk.AddComponent<MeshRenderer>();
             }
         }
 
