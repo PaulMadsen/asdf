@@ -16,10 +16,9 @@ public class Chunk : MonoBehaviour {
     private List<List<Vector3>> verts = new List<List<Vector3>>();
     private List<List<int>> triangles = new List<List<int>>();
     private List<List<Vector2>> uvs = new List<List<Vector2>>();
-    
-    
 
-    void Start () {
+    void Start () {        
+
         transform.parent = World.self;
         System.Random randy = new System.Random();
         for (int i = 0; i < CHUNK_PIECES; ++i)
@@ -132,9 +131,10 @@ public class Chunk : MonoBehaviour {
             uvs.Add(new List<Vector2>());
 
         float textureIndexSize = (float)1 / (float)16;
-        float xOffset = 2;
-        float yOffset = 15;
-        
+
+        float xOffset = Block.BlockInfo[1].textureXOffset;
+        float yOffset = Block.BlockInfo[1].textureYOffset;
+
         if (direction == FaceDirection.top)
         {
             //triangles and verts are done in a counter-intuitive order            

@@ -13,6 +13,8 @@ public class World : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        Block.BlockInfo.Add(1, new Block(6, 15, "stone")); //for testing.  Load from file later   
+
         mats = mat;
         self = transform;
         allBlocks = new Dictionary<Vector2, Chunk>();        
