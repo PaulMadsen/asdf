@@ -16,13 +16,7 @@ public class CharacterMovement : MonoBehaviour
         cc = GetComponent<CharacterController>();
     }
     void Update()
-    {
-        Vector3 myPos = transform.position - new Vector3(0, 1.08f, 0);
-
-        /*if (World.GetBlock(myPos) > 0)
-            grounded = true;
-        else
-            grounded = false;*/
+    {   
         if (cc.isGrounded)
         {
             moveDir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -35,11 +29,7 @@ public class CharacterMovement : MonoBehaviour
         }
 
         Vector3 collisionCheck = moveDir.normalized;
-        collisionCheck.y = 0;
-        //if (World.GetBlock(myPos + new Vector3((collisionCheck.x / 3), 0.5f, 0)) > 0)
-            //moveDir.x = 0;
-        //if (World.GetBlock(myPos + new Vector3(0, 0.5f, (collisionCheck.z / 3))) > 0)
-            //moveDir.z = 0;
+        collisionCheck.y = 0;     
 
         if (!cc.isGrounded)
             moveDir.y -= gravity * Time.deltaTime;

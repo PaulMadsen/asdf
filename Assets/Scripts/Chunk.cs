@@ -61,7 +61,6 @@ public class Chunk : MonoBehaviour {
         int localZ = (int)(blockPos.z % CHUNK_WIDTH);                
         int segment = (int)(blockPos.y / CHUNK_HEIGHT);
 
-        Debug.Log("modifying block " + segment + " " + localX + " " + localY + " " + localZ);
         if (blockID == 0)
             chunk.chunkSegments[segment][localX, localY, localZ] = null;
         else
@@ -111,7 +110,6 @@ public class Chunk : MonoBehaviour {
 
     void Cmesh()
     {
-        Debug.Log("Calculating chunk mesh");
         triangles.Clear();
         verts.Clear();        
         uvs.Clear();
@@ -318,7 +316,7 @@ public class Chunk : MonoBehaviour {
         int x = (int)(pos.x % CHUNK_WIDTH);
         int y = (int)(pos.y % CHUNK_HEIGHT);
         int z = (int)(pos.z % CHUNK_WIDTH);
-        Debug.Log("GetBlock called"+ x + " " + y + " " + z);
+        
         if (segment < 0 || segment >= chunkSegments.Count) return 0;
         if (chunkSegments[segment][x, y, z] == null) return 0;
         return chunkSegments[segment][x, y, z].blockID;

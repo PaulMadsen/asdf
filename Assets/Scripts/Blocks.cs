@@ -15,9 +15,9 @@ public class BlockPair
 
 public class BlockMeta
 {    
-    int BlockHealth = 0;
-    int orientation = 0; //bitmask represents rotation in 3 axis
-    int pieces = 0; //also bitmask.  How many pieces of the block exist
+    //int BlockHealth = 0;
+    //int orientation = 0; //bitmask represents rotation in 3 axis
+    //int pieces = 0; //also bitmask.  How many pieces of the block exist
     
 }
 

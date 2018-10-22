@@ -15,7 +15,6 @@ public class BlockSelectorPreview : MonoBehaviour
         RectTransform GUIRectTransform = GetComponent<RectTransform>();
         float guiWidth = GUIRectTransform.rect.width;
         float guiHeight = GUIRectTransform.rect.height;
-        Debug.Log(guiWidth + " " + guiHeight);
         Vector3 previewCubePos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         previewCubePos -= new Vector3(200f, 200f, 0);
         List<Vector3> previewPositions = new List<Vector3>();

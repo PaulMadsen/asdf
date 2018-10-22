@@ -49,10 +49,8 @@ public class World : MonoBehaviour {
 	void Update () {
 		
 	}
-    public static int GetBlock(Vector3 pos) {
-        Debug.Log("pos: " + pos);
-        Vector2 chunkPos = new Vector2((int)(pos.x / Chunk.CHUNK_WIDTH), (int)(pos.z / Chunk.CHUNK_WIDTH));
-        Debug.Log("ChunkPos: " + chunkPos);
+    public static int GetBlock(Vector3 pos) {        
+        Vector2 chunkPos = new Vector2((int)(pos.x / Chunk.CHUNK_WIDTH), (int)(pos.z / Chunk.CHUNK_WIDTH));        
         if (!Chunk.allBlocks.ContainsKey(chunkPos)) return 0;
         return Chunk.allBlocks[chunkPos].GetBlock(pos);
     }
