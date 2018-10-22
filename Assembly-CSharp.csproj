@@ -55,12 +55,15 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\BlockController.cs" />
      <Compile Include="Assets\Scripts\Blocks.cs" />
+     <Compile Include="Assets\Scripts\BlockSelectorPreview.cs" />
      <Compile Include="Assets\Scripts\CharacterMovement.cs" />
      <Compile Include="Assets\Scripts\Chunk.cs" />
+     <Compile Include="Assets\Scripts\GUIstate.cs" />
      <Compile Include="Assets\Scripts\Highlighter.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />
      <Compile Include="Assets\Scripts\VirticalLook.cs" />
      <Compile Include="Assets\Scripts\World.cs" />
+     <None Include="Assets\Textures\GUI.shader" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/paul/Documents/S3/asdf/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

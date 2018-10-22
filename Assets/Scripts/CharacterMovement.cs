@@ -36,13 +36,14 @@ public class CharacterMovement : MonoBehaviour
 
         Vector3 collisionCheck = moveDir.normalized;
         collisionCheck.y = 0;
-        if (World.GetBlock(myPos + new Vector3((collisionCheck.x / 3), 0.5f, 0)) > 0)
-            moveDir.x = 0;
-        if (World.GetBlock(myPos + new Vector3(0, 0.5f, (collisionCheck.z / 3))) > 0)
-            moveDir.z = 0;
+        //if (World.GetBlock(myPos + new Vector3((collisionCheck.x / 3), 0.5f, 0)) > 0)
+            //moveDir.x = 0;
+        //if (World.GetBlock(myPos + new Vector3(0, 0.5f, (collisionCheck.z / 3))) > 0)
+            //moveDir.z = 0;
 
         if (!cc.isGrounded)
             moveDir.y -= gravity * Time.deltaTime;
         cc.Move(moveDir * Time.deltaTime);
     }
+   
 }

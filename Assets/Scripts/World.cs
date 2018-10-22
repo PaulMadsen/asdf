@@ -6,18 +6,17 @@ using System;
 public class World : MonoBehaviour {
     private int WIDTH = 16;
     public static Transform self;
-    private static Dictionary<Vector2, Chunk> allBlocks;
+    
     [SerializeField]
     public Material mat; //plug-in in unity GUI
-    public static Material mats; //script uses this one
+    public static Material mats; //script uses this one    
 
     // Use this for initialization
-    void Start () {
-        Block.BlockInfo.Add(1, new Block(6, 15, "stone")); //for testing.  Load from file later   
+    void Start () {        
 
         mats = mat;
         self = transform;
-        allBlocks = new Dictionary<Vector2, Chunk>();        
+        Chunk.allBlocks = new Dictionary<Vector2, Chunk>();        
         for (int chunkX = 0; chunkX < WIDTH; ++chunkX)
         {
             for (int chunkZ = 0; chunkZ < WIDTH; ++chunkZ)
@@ -27,7 +26,7 @@ public class World : MonoBehaviour {
                 chunk.transform.parent = self;
                 chunk.transform.position = new Vector3(chunkX * WIDTH, 0, chunkZ * WIDTH);
                 Vector2 cPos = new Vector2(chunkX, chunkZ);                                
-                allBlocks.Add(cPos, c);
+                Chunk.allBlocks.Add(cPos, c);
                 chunk.AddComponent<MeshFilter>();
                 chunk.AddComponent<MeshRenderer>();
             }
@@ -35,14 +34,26 @@ public class World : MonoBehaviour {
 
         
 	}
+    
+    void Awake()
+    {
+        Block.BlockInfo.Add(1, new Block(6, 15, "stone")); //for testing.  Load from file later
+        Block.BlockInfo.Add(2, new Block(2, 15, "dirt"));
+        Block.BlockInfo.Add(3, new Block(4, 15, "wood plank"));
+        Block.BlockInfo.Add(4, new Block(1, 14, "stone brick"));
+        Block.BlockInfo.Add(5, new Block(2, 14, "sand"));
+        Block.BlockInfo.Add(6, new Block(3, 14, "bedrock"));
+    }
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
     public static int GetBlock(Vector3 pos) {
+        Debug.Log("pos: " + pos);
         Vector2 chunkPos = new Vector2((int)(pos.x / Chunk.CHUNK_WIDTH), (int)(pos.z / Chunk.CHUNK_WIDTH));
-        if (!allBlocks.ContainsKey(chunkPos)) return 0;
-        return allBlocks[chunkPos].GetBlock(pos);
+        Debug.Log("ChunkPos: " + chunkPos);
+        if (!Chunk.allBlocks.ContainsKey(chunkPos)) return 0;
+        return Chunk.allBlocks[chunkPos].GetBlock(pos);
     }
 }

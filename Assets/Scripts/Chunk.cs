@@ -16,10 +16,9 @@ public class Chunk : MonoBehaviour {
     private List<List<Vector3>> verts = new List<List<Vector3>>();
     private List<List<int>> triangles = new List<List<int>>();
     private List<List<Vector2>> uvs = new List<List<Vector2>>();
+    public static Dictionary<Vector2, Chunk> allBlocks;
 
     void Start () {        
-
-        transform.parent = World.self;
         System.Random randy = new System.Random();
         for (int i = 0; i < CHUNK_PIECES; ++i)
         {
@@ -50,6 +49,57 @@ public class Chunk : MonoBehaviour {
         }
 
 	}
+
+
+    public static void SetBlock(Vector3 blockPos, int blockID)
+    {
+        Vector2 chunkPos = new Vector2((int)(blockPos.x / CHUNK_WIDTH), (int)(blockPos.z / CHUNK_WIDTH));        
+        Chunk chunk = allBlocks[chunkPos];
+
+        int localX = (int)(blockPos.x % CHUNK_WIDTH);
+        int localY = (int)(blockPos.y % CHUNK_HEIGHT);
+        int localZ = (int)(blockPos.z % CHUNK_WIDTH);                
+        int segment = (int)(blockPos.y / CHUNK_HEIGHT);
+
+        Debug.Log("modifying block " + segment + " " + localX + " " + localY + " " + localZ);
+        if (blockID == 0)
+            chunk.chunkSegments[segment][localX, localY, localZ] = null;
+        else
+            chunk.chunkSegments[segment][localX, localY, localZ] = new BlockPair(blockID);
+
+        /*for (int i = 0; i < 16; ++i)
+            chunk.chunkSegments[segment][localX, i, localZ] = new BlockPair(3);*/
+        chunk.meshDirty = true; //TODO make individual segments dirty, not the whole stack
+        if (localX == 0)
+        {
+            Vector2 neihborPos = chunkPos - new Vector2(1, 0);
+            if (allBlocks.ContainsKey(neihborPos))
+                allBlocks[neihborPos].meshDirty = true;
+        }
+        else if (localX == CHUNK_WIDTH - 1)
+        {
+            Vector2 neihborPos = chunkPos + new Vector2(1, 0);
+            if (allBlocks.ContainsKey(neihborPos))
+                allBlocks[neihborPos].meshDirty = true;
+        }
+        if (localY == 0)
+        {
+            Vector2 neihborPos = chunkPos - new Vector2(0, 1);
+            if (allBlocks.ContainsKey(neihborPos))
+                allBlocks[neihborPos].meshDirty = true;
+        }
+        else if (localY == CHUNK_WIDTH - 1)
+        {
+            Vector2 neihborPos = chunkPos + new Vector2(0, 1);
+            if (allBlocks.ContainsKey(neihborPos))
+                allBlocks[neihborPos].meshDirty = true;
+        }
+    }
+
+    void Awake()
+    {
+        transform.parent = World.self;
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -61,6 +111,7 @@ public class Chunk : MonoBehaviour {
 
     void Cmesh()
     {
+        Debug.Log("Calculating chunk mesh");
         triangles.Clear();
         verts.Clear();        
         uvs.Clear();
@@ -132,8 +183,9 @@ public class Chunk : MonoBehaviour {
 
         float textureIndexSize = (float)1 / (float)16;
 
-        float xOffset = Block.BlockInfo[1].textureXOffset;
-        float yOffset = Block.BlockInfo[1].textureYOffset;
+        int blockID = chunkSegments[chunkSegment][x, y, z].blockID;
+        float xOffset = Block.BlockInfo[blockID].textureXOffset;
+        float yOffset = Block.BlockInfo[blockID].textureYOffset;
 
         if (direction == FaceDirection.top)
         {
@@ -260,12 +312,13 @@ public class Chunk : MonoBehaviour {
     }
 
     public int GetBlock(Vector3 pos)
-    {
+    {        
         int segment = (int)(pos.y  / CHUNK_HEIGHT);
         if (chunkSegments.Count < segment) return 0;
-        int x = (int)(pos.x / CHUNK_WIDTH);
+        int x = (int)(pos.x % CHUNK_WIDTH);
         int y = (int)(pos.y % CHUNK_HEIGHT);
-        int z = (int)(pos.z / CHUNK_WIDTH);
+        int z = (int)(pos.z % CHUNK_WIDTH);
+        Debug.Log("GetBlock called"+ x + " " + y + " " + z);
         if (segment < 0 || segment >= chunkSegments.Count) return 0;
         if (chunkSegments[segment][x, y, z] == null) return 0;
         return chunkSegments[segment][x, y, z].blockID;
