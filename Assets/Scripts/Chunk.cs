@@ -9,13 +9,13 @@ public class Chunk : MonoBehaviour {
     public const int CHUNK_WIDTH = 16;
     public const int CHUNK_HEIGHT = 8;  //virtical blocks per chunk piece
     private List<BlockPair[,,]> chunkSegments = new List<BlockPair[,,]>();
-    private bool meshDirty = true; //mesh needs (re)generated?
+    public bool[] meshDirty = new bool[CHUNK_PIECES]; //mesh needs (re)generated?
     //each virtical chunk piece has meshes, verts, triangles and UVs
-    private List<MeshFilter> meshes = new List<MeshFilter>();
-    private List<MeshCollider> colliders = new List<MeshCollider>();
-    private List<List<Vector3>> verts = new List<List<Vector3>>();
-    private List<List<int>> triangles = new List<List<int>>();
-    private List<List<Vector2>> uvs = new List<List<Vector2>>();
+    private List<MeshFilter> meshes = new List<MeshFilter>(new MeshFilter[CHUNK_PIECES]);
+    private List<MeshCollider> colliders = new List<MeshCollider>(new MeshCollider[CHUNK_PIECES]);
+    private List<List<Vector3>> verts = new List<List<Vector3>>(new List<Vector3>[CHUNK_PIECES]);
+    private List<List<int>> triangles = new List<List<int>>(new List<int>[CHUNK_PIECES]);
+    private List<List<Vector2>> uvs = new List<List<Vector2>>(new List<Vector2>[CHUNK_PIECES]);
     public static Dictionary<Vector2, Chunk> allBlocks;
 
     void Start () {        
@@ -24,16 +24,17 @@ public class Chunk : MonoBehaviour {
         {
             chunkSegments.Add(new BlockPair[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
             GameObject chunkPiece = new GameObject("Chunk Piece " + i);
-            meshes.Add(chunkPiece.AddComponent<MeshFilter>());
+            meshes[i] = chunkPiece.AddComponent<MeshFilter>();
             MeshRenderer mr = chunkPiece.AddComponent<MeshRenderer>();
-            colliders.Add(chunkPiece.AddComponent<MeshCollider>());
+            colliders[i] = chunkPiece.AddComponent<MeshCollider>();
             mr.material = World.mats;
             chunkPiece.transform.position = new Vector3(transform.position.x, i * CHUNK_HEIGHT, transform.position.z);
             chunkPiece.transform.SetParent(this.transform);
 
             //generate default terrain
             for (int x = 0; x < CHUNK_WIDTH; ++x)           
-                for (int y = 0; y < CHUNK_HEIGHT; ++y)
+                for (int y = 0; y < CHUNK_HEIGHT; ++y) {
+                    meshDirty[i] = true;
                     for (int z = 0; z < CHUNK_WIDTH; ++z)
                     {
                         if (i > 1) continue; // chunkSegments[i][x, y, z] = new BlockPair(0);
@@ -45,7 +46,8 @@ public class Chunk : MonoBehaviour {
                         if (i == 1 && y > 5)
                             continue; // chunkSegments[i][x, y, z] = new BlockPair(0); //cutting it short here
                         chunkSegments[i][x, y, z] = new BlockPair(1);
-                    }            
+                    }
+                }
         }
 
 	}
@@ -66,32 +68,31 @@ public class Chunk : MonoBehaviour {
         else
             chunk.chunkSegments[segment][localX, localY, localZ] = new BlockPair(blockID);
 
-        /*for (int i = 0; i < 16; ++i)
-            chunk.chunkSegments[segment][localX, i, localZ] = new BlockPair(3);*/
-        chunk.meshDirty = true; //TODO make individual segments dirty, not the whole stack
-        if (localX == 0)
+        
+        chunk.meshDirty[segment] = true; 
+        if (localX == 0) //mark surrounding chunks dirty if bordering them
         {
             Vector2 neihborPos = chunkPos - new Vector2(1, 0);
             if (allBlocks.ContainsKey(neihborPos))
-                allBlocks[neihborPos].meshDirty = true;
+                allBlocks[neihborPos].meshDirty[segment] = true;
         }
         else if (localX == CHUNK_WIDTH - 1)
         {
             Vector2 neihborPos = chunkPos + new Vector2(1, 0);
             if (allBlocks.ContainsKey(neihborPos))
-                allBlocks[neihborPos].meshDirty = true;
+                allBlocks[neihborPos].meshDirty[segment] = true;
         }
         if (localY == 0)
         {
             Vector2 neihborPos = chunkPos - new Vector2(0, 1);
             if (allBlocks.ContainsKey(neihborPos))
-                allBlocks[neihborPos].meshDirty = true;
+                allBlocks[neihborPos].meshDirty[segment] = true;
         }
         else if (localY == CHUNK_WIDTH - 1)
         {
             Vector2 neihborPos = chunkPos + new Vector2(0, 1);
             if (allBlocks.ContainsKey(neihborPos))
-                allBlocks[neihborPos].meshDirty = true;
+                allBlocks[neihborPos].meshDirty[segment] = true;
         }
     }
 
@@ -102,53 +103,60 @@ public class Chunk : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (meshDirty)
-        {
-            Cmesh();
-        }
+        for (int i=0; i<CHUNK_PIECES; ++i)
+		    if (meshDirty[i])
+            {
+                Cmesh(i);
+            }
 	}
 
-    void Cmesh()
+    void Cmesh(int dirtyPiece)
     {
-        triangles.Clear();
-        verts.Clear();        
-        uvs.Clear();
-
-        for (int i=0; i < CHUNK_PIECES; ++i)
-        {
-            BlockPair[,,] chunkPiece = chunkSegments[i];
-            for (int x=0; x<CHUNK_WIDTH; ++x)
-                for(int y=0; y<CHUNK_HEIGHT; ++y)
-                    for(int z=0; z<CHUNK_WIDTH; ++z)
-                    {
-                        if (chunkPiece[x, y, z] != null && 
-                            chunkPiece[x,y,z].blockID > 0)                            
-                        {
-                            if (IsFaceVisible(x, y+1, z, i))
-                                AddFace(x, y, z, i, FaceDirection.top);
-                            if (IsFaceVisible(x, y - 1, z, i))
-                                AddFace(x, y, z, i, FaceDirection.bottom);
-                            if (IsFaceVisible(x-1, y, z, i))
-                                AddFace(x, y, z, i, FaceDirection.left);
-                            if (IsFaceVisible(x+1, y, z, i))
-                                AddFace(x, y, z, i, FaceDirection.right);
-                            if (IsFaceVisible(x, y, z-1, i))
-                                AddFace(x, y, z, i, FaceDirection.front);
-                            if (IsFaceVisible(x, y, z+1, i))
-                                AddFace(x, y, z, i, FaceDirection.back);
-
-                        }
-                    }
-            if (verts.Count <= i) continue;
-            Mesh m = new Mesh();
-            m.vertices = verts[i].ToArray();
-            m.triangles = triangles[i].ToArray();
-            m.uv = uvs[i].ToArray();
-            m.RecalculateNormals();          
-            meshes[i].mesh = m;
-            colliders[i].sharedMesh = m;      
+        try { 
+            triangles[dirtyPiece] = new List<int>();
+            verts[dirtyPiece] = new List<Vector3>();
+            uvs[dirtyPiece] = new List<Vector2>();
         }
-        meshDirty = false;
+        catch (Exception e){
+
+            Debug.Log(dirtyPiece + " " + triangles.Count + " " + verts.Count + " " + uvs.Count);
+        }
+
+
+
+        BlockPair[,,] chunkPiece = chunkSegments[dirtyPiece];
+        for (int x=0; x<CHUNK_WIDTH; ++x)
+            for(int y=0; y<CHUNK_HEIGHT; ++y)
+                for(int z=0; z<CHUNK_WIDTH; ++z)
+                {
+                    if (chunkPiece[x, y, z] != null && 
+                        chunkPiece[x,y,z].blockID > 0)                            
+                    {
+                        if (IsFaceVisible(x, y+1, z, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.top);
+                        if (IsFaceVisible(x, y - 1, z, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.bottom);
+                        if (IsFaceVisible(x-1, y, z, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.left);
+                        if (IsFaceVisible(x+1, y, z, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.right);
+                        if (IsFaceVisible(x, y, z-1, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.front);
+                        if (IsFaceVisible(x, y, z+1, dirtyPiece))
+                            AddFace(x, y, z, dirtyPiece, FaceDirection.back);
+
+                    }
+                }
+        //if (verts.Count <= i) continue; ???
+        Mesh m = new Mesh();
+        m.vertices = verts[dirtyPiece].ToArray();
+        m.triangles = triangles[dirtyPiece].ToArray();
+        m.uv = uvs[dirtyPiece].ToArray();
+        m.RecalculateNormals();          
+        meshes[dirtyPiece].mesh = m;
+        colliders[dirtyPiece].sharedMesh = m;    
+        
+        meshDirty[dirtyPiece] = false;
         
     }
 
@@ -172,13 +180,6 @@ public class Chunk : MonoBehaviour {
 
     void AddFace(int x, int y, int z, int chunkSegment, FaceDirection direction)
     {
-        if (verts.Count <= chunkSegment)
-            verts.Add(new List<Vector3>());
-        if (triangles.Count <= chunkSegment)
-            triangles.Add(new List<int>());
-        if (uvs.Count <= chunkSegment)
-            uvs.Add(new List<Vector2>());
-
         float textureIndexSize = (float)1 / (float)16;
 
         int blockID = chunkSegments[chunkSegment][x, y, z].blockID;

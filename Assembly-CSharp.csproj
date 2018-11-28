@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\BlockSelectorPreview.cs" />
     <Compile Include="Assets\Scripts\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Chunk.cs" />
+    <Compile Include="Assets\Scripts\ChunkingRadius.cs" />
     <Compile Include="Assets\Scripts\GUIstate.cs" />
     <Compile Include="Assets\Scripts\Highlighter.cs" />
     <Compile Include="Assets\Scripts\MouseLook.cs" />
