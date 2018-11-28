@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// pairs a block id with all the information that block represents 
+/// </summary>
 public class BlockPair
 {    
     public int blockID;

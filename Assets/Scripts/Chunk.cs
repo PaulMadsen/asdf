@@ -7,7 +7,7 @@ public class Chunk : MonoBehaviour {
 
     public const int CHUNK_PIECES = 8; //total virtical chunk pieces in a chunk
     public const int CHUNK_WIDTH = 16;
-    public const int CHUNK_HEIGHT = 16;  //virtical blocks per chunk piece
+    public const int CHUNK_HEIGHT = 8;  //virtical blocks per chunk piece
     private List<BlockPair[,,]> chunkSegments = new List<BlockPair[,,]>();
     private bool meshDirty = true; //mesh needs (re)generated?
     //each virtical chunk piece has meshes, verts, triangles and UVs
@@ -33,7 +33,7 @@ public class Chunk : MonoBehaviour {
 
             //generate default terrain
             for (int x = 0; x < CHUNK_WIDTH; ++x)           
-                for (int y = 0; y < CHUNK_WIDTH; ++y)
+                for (int y = 0; y < CHUNK_HEIGHT; ++y)
                     for (int z = 0; z < CHUNK_WIDTH; ++z)
                     {
                         if (i > 1) continue; // chunkSegments[i][x, y, z] = new BlockPair(0);
