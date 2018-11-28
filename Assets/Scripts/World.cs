@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 public class World : MonoBehaviour {
-    private int WIDTH = 16;
+    private static int WIDTH = 16;
     public static Transform self;
     
     [SerializeField]
@@ -14,27 +14,28 @@ public class World : MonoBehaviour {
     // Use this for initialization
     void Start () {        
 
-        mats = mat;
-        self = transform;
-        Chunk.allBlocks = new Dictionary<Vector2, Chunk>();        
-        for (int chunkX = 0; chunkX < WIDTH; ++chunkX)
-        {
-            for (int chunkZ = 0; chunkZ < WIDTH; ++chunkZ)
-            {
-                GameObject chunk = new GameObject("Chunk " + "(" + chunkX + "," + chunkZ + ")");
-                Chunk c = chunk.AddComponent<Chunk>();
-                chunk.transform.parent = self;
-                chunk.transform.position = new Vector3(chunkX * WIDTH, 0, chunkZ * WIDTH);
-                Vector2 cPos = new Vector2(chunkX, chunkZ);                                
-                Chunk.allBlocks.Add(cPos, c);
-                chunk.AddComponent<MeshFilter>();
-                chunk.AddComponent<MeshRenderer>();
-            }
-        }
+      
 
         
 	}
-    
+
+    /// <summary>
+    /// Loads or generates a entire chunk stack
+    /// </summary>
+    /// <param name="x">coordinate</param>
+    /// <param name="y">coordinate</param>
+    public static void InstantiateChunk(int x, int z)
+    {
+        GameObject chunk = new GameObject("Chunk " + "(" + x + "," + z + ")");
+        Chunk c = chunk.AddComponent<Chunk>();
+        chunk.transform.parent = self;
+        chunk.transform.position = new Vector3(x * WIDTH, 0, z * WIDTH);
+        Vector2 cPos = new Vector2(x, z);
+        Chunk.allBlocks.Add(cPos, c);
+        chunk.AddComponent<MeshFilter>();
+        chunk.AddComponent<MeshRenderer>();
+    }
+
     void Awake()
     {
         Block.BlockInfo.Add(1, new Block(6, 15, "stone")); //for testing.  Load from file later
@@ -43,6 +44,18 @@ public class World : MonoBehaviour {
         Block.BlockInfo.Add(4, new Block(1, 14, "stone brick"));
         Block.BlockInfo.Add(5, new Block(2, 14, "sand"));
         Block.BlockInfo.Add(6, new Block(3, 14, "bedrock"));
+        mats = mat;
+        self = transform;
+
+        /*for (int chunkX = 0; chunkX < WIDTH; ++chunkX)
+        {
+            for (int chunkZ = 0; chunkZ < WIDTH; ++chunkZ)
+            {
+                InstantiateChunk(chunkX, chunkZ);
+            }
+        }*/
+
+        
     }
 	
 	// Update is called once per frame

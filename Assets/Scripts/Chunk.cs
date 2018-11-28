@@ -16,7 +16,7 @@ public class Chunk : MonoBehaviour {
     private List<List<Vector3>> verts = new List<List<Vector3>>(new List<Vector3>[CHUNK_PIECES]);
     private List<List<int>> triangles = new List<List<int>>(new List<int>[CHUNK_PIECES]);
     private List<List<Vector2>> uvs = new List<List<Vector2>>(new List<Vector2>[CHUNK_PIECES]);
-    public static Dictionary<Vector2, Chunk> allBlocks;
+    public static Dictionary<Vector2, Chunk> allBlocks = new Dictionary<Vector2, Chunk>();
 
     void Start () {        
         System.Random randy = new System.Random();
