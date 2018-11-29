@@ -52,43 +52,51 @@ public class Chunk : MonoBehaviour {
 
 	}
 
+    public static Vector3 GlobalToChunkGrid(Vector3 vec)
+    {        
+        int localX = Mathf.FloorToInt(vec.x % CHUNK_WIDTH);        
+        int localZ = Mathf.FloorToInt(vec.z % CHUNK_WIDTH);
+        if (localX < 0)
+            localX += CHUNK_WIDTH;
+        if (localZ < 0)
+            localZ += CHUNK_WIDTH;
+        return new Vector3(localX, (int)(vec.y % CHUNK_HEIGHT), localZ);
+    }
 
     public static void SetBlock(Vector3 blockPos, int blockID)
     {
-        Vector2 chunkPos = new Vector2((int)(blockPos.x / CHUNK_WIDTH), (int)(blockPos.z / CHUNK_WIDTH));        
+        Vector2 chunkPos = new Vector2(Mathf.FloorToInt(blockPos.x / CHUNK_WIDTH), Mathf.FloorToInt(blockPos.z / CHUNK_WIDTH));        
         Chunk chunk = allBlocks[chunkPos];
-
-        int localX = (int)(blockPos.x % CHUNK_WIDTH);
-        int localY = (int)(blockPos.y % CHUNK_HEIGHT);
-        int localZ = (int)(blockPos.z % CHUNK_WIDTH);                
+        Vector3 localPos = GlobalToChunkGrid(blockPos);
+        Debug.Log("Setting block at location " + localPos);
         int segment = (int)(blockPos.y / CHUNK_HEIGHT);
 
         if (blockID == 0)
-            chunk.chunkSegments[segment][localX, localY, localZ] = null;
+            chunk.chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] = null;
         else
-            chunk.chunkSegments[segment][localX, localY, localZ] = new BlockPair(blockID);
+            chunk.chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] = new BlockPair(blockID);
 
         
         chunk.meshDirty[segment] = true; 
-        if (localX == 0) //mark surrounding chunks dirty if bordering them
+        if (localPos.x == 0) //mark surrounding chunks dirty if bordering them
         {
             Vector2 neihborPos = chunkPos - new Vector2(1, 0);
             if (allBlocks.ContainsKey(neihborPos))
                 allBlocks[neihborPos].meshDirty[segment] = true;
         }
-        else if (localX == CHUNK_WIDTH - 1)
+        else if (localPos.x == CHUNK_WIDTH - 1)
         {
             Vector2 neihborPos = chunkPos + new Vector2(1, 0);
             if (allBlocks.ContainsKey(neihborPos))
                 allBlocks[neihborPos].meshDirty[segment] = true;
         }
-        if (localY == 0)
+        if (localPos.y == 0)
         {
             Vector2 neihborPos = chunkPos - new Vector2(0, 1);
             if (allBlocks.ContainsKey(neihborPos))
                 allBlocks[neihborPos].meshDirty[segment] = true;
         }
-        else if (localY == CHUNK_WIDTH - 1)
+        else if (localPos.y == CHUNK_WIDTH - 1)
         {
             Vector2 neihborPos = chunkPos + new Vector2(0, 1);
             if (allBlocks.ContainsKey(neihborPos))
@@ -311,16 +319,18 @@ public class Chunk : MonoBehaviour {
     }
 
     public int GetBlock(Vector3 pos)
-    {        
+    {
+        
         int segment = (int)(pos.y  / CHUNK_HEIGHT);
         if (chunkSegments.Count < segment) return 0;
-        int x = (int)(pos.x % CHUNK_WIDTH);
-        int y = (int)(pos.y % CHUNK_HEIGHT);
-        int z = (int)(pos.z % CHUNK_WIDTH);
+        Vector3 localPos = GlobalToChunkGrid(pos);
+        Debug.Log("Global: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
+        Debug.Log("Local: (" + localPos.x + ", " + (int)localPos.y + ", " + localPos.z + ")");
+        Debug.Log("Segment: " + segment);
         
         if (segment < 0 || segment >= chunkSegments.Count) return 0;
-        if (chunkSegments[segment][x, y, z] == null) return 0;
-        return chunkSegments[segment][x, y, z].blockID;
+        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null) return 0;
+        return chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z].blockID;
         
         
     }
