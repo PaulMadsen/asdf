@@ -18,12 +18,15 @@ public class BlockController : MonoBehaviour {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 10f, lm))
         {
+
             //Vector3 blockPos = new Vector3(((int)hit.point.x) + 0.5f, ((int)hit.point.y) + 0.5f, ((int)hit.point.z) + 0.5f);
             Vector3 blockPos = hit.point - hit.normal / 2;
-            bh.transform.position = blockPos;
+            bh.transform.position = new Vector3(Mathf.Floor(blockPos.x) + 0.5f, 
+                Mathf.Floor(blockPos.y) + 0.5f, Mathf.Floor(blockPos.z) + 0.5f);
 
             if (Input.GetMouseButtonDown(0))
-            {                              
+            {
+                Debug.Log("Raycast hit at " + hit.point);
                 int blockID = World.GetBlock(blockPos);                
                 if (blockID != 0)
                 {

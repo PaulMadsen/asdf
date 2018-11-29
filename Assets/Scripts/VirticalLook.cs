@@ -12,6 +12,7 @@ public class VirticalLook : MonoBehaviour {
     //attach to camera only.
     //left and right mouse look would be controlled by the character object
 	void Update () {
+        if (GUIstate.GUIActive) return;
         _rotationX -= Input.GetAxis("Mouse Y") * sensitivity;
         _rotationX = Mathf.Clamp(_rotationX, minimumVert, maximumVert);
         transform.localEulerAngles = new Vector3(_rotationX, 0, 0);

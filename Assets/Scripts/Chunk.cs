@@ -7,7 +7,7 @@ public class Chunk : MonoBehaviour {
 
     public const int CHUNK_PIECES = 8; //total virtical chunk pieces in a chunk
     public const int CHUNK_WIDTH = 16;
-    public const int CHUNK_HEIGHT = 8;  //virtical blocks per chunk piece
+    public const int CHUNK_HEIGHT = 16;  //virtical blocks per chunk piece
     private List<BlockPair[,,]> chunkSegments = new List<BlockPair[,,]>();
     public bool[] meshDirty = new bool[CHUNK_PIECES]; //mesh needs (re)generated?
     //each virtical chunk piece has meshes, verts, triangles and UVs
@@ -30,11 +30,11 @@ public class Chunk : MonoBehaviour {
             mr.material = World.mats;
             chunkPiece.transform.position = new Vector3(transform.position.x, i * CHUNK_HEIGHT, transform.position.z);
             chunkPiece.transform.SetParent(this.transform);
+            meshDirty[i] = true;
 
             //generate default terrain
             for (int x = 0; x < CHUNK_WIDTH; ++x)           
-                for (int y = 0; y < CHUNK_HEIGHT; ++y) {
-                    meshDirty[i] = true;
+                for (int y = 0; y < CHUNK_HEIGHT; ++y) {                    
                     for (int z = 0; z < CHUNK_WIDTH; ++z)
                     {
                         if (i > 1) continue; // chunkSegments[i][x, y, z] = new BlockPair(0);
@@ -68,7 +68,7 @@ public class Chunk : MonoBehaviour {
         Vector2 chunkPos = new Vector2(Mathf.FloorToInt(blockPos.x / CHUNK_WIDTH), Mathf.FloorToInt(blockPos.z / CHUNK_WIDTH));        
         Chunk chunk = allBlocks[chunkPos];
         Vector3 localPos = GlobalToChunkGrid(blockPos);
-        Debug.Log("Setting block at location " + localPos);
+        Debug.Log("SetBlock() at location " + localPos);
         int segment = (int)(blockPos.y / CHUNK_HEIGHT);
 
         if (blockID == 0)
@@ -119,18 +119,10 @@ public class Chunk : MonoBehaviour {
 	}
 
     void Cmesh(int dirtyPiece)
-    {
-        try { 
-            triangles[dirtyPiece] = new List<int>();
-            verts[dirtyPiece] = new List<Vector3>();
-            uvs[dirtyPiece] = new List<Vector2>();
-        }
-        catch (Exception e){
-
-            Debug.Log(dirtyPiece + " " + triangles.Count + " " + verts.Count + " " + uvs.Count);
-        }
-
-
+    {   
+        triangles[dirtyPiece] = new List<int>();
+        verts[dirtyPiece] = new List<Vector3>();
+        uvs[dirtyPiece] = new List<Vector2>();
 
         BlockPair[,,] chunkPiece = chunkSegments[dirtyPiece];
         for (int x=0; x<CHUNK_WIDTH; ++x)
@@ -196,7 +188,7 @@ public class Chunk : MonoBehaviour {
 
         if (direction == FaceDirection.top)
         {
-            //triangles and verts are done in a counter-intuitive order            
+            //triangles and verts are done in a counter-intuitive order                        
             triangles[chunkSegment].Add(verts[chunkSegment].Count + 0);
             triangles[chunkSegment].Add(verts[chunkSegment].Count + 1);
             triangles[chunkSegment].Add(verts[chunkSegment].Count + 2);
@@ -324,12 +316,20 @@ public class Chunk : MonoBehaviour {
         int segment = (int)(pos.y  / CHUNK_HEIGHT);
         if (chunkSegments.Count < segment) return 0;
         Vector3 localPos = GlobalToChunkGrid(pos);
+        Debug.Log("Chunk.GetBlock() segment: " + segment);
         Debug.Log("Global: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
-        Debug.Log("Local: (" + localPos.x + ", " + (int)localPos.y + ", " + localPos.z + ")");
-        Debug.Log("Segment: " + segment);
+        Debug.Log("Local: (" + (int)localPos.x + ", " + (int)localPos.y + ", " + (int)localPos.z + ")");
+        if (segment < 0 || segment >= chunkSegments.Count)
+        {
+            Debug.Log("Segment error");
+            return 0;
+        }
+        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null)
+        {
+            Debug.Log("block at that location is air (0)");
+            //return 0;
+        }
         
-        if (segment < 0 || segment >= chunkSegments.Count) return 0;
-        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null) return 0;
         return chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z].blockID;
         
         

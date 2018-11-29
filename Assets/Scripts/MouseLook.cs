@@ -10,7 +10,8 @@ public class MouseLook : MonoBehaviour
    
    
     void Update()
-    {   
+    {
+        if (GUIstate.GUIActive) return;
         float delta = Input.GetAxis("Mouse X") * sensitivity;
         float rotationY = transform.localEulerAngles.y + delta;
         transform.localEulerAngles = new Vector3(0, rotationY, 0);

@@ -6,7 +6,7 @@ public class GUIstate : MonoBehaviour {
     
     [SerializeField]
     public GameObject BlockSelectorGUI;
-    public static bool GUIActive;
+    public static bool GUIActive = false;
 
     void Start()
     {
