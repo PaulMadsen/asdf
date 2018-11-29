@@ -67,8 +67,7 @@ public class Chunk : MonoBehaviour {
     {
         Vector2 chunkPos = new Vector2(Mathf.FloorToInt(blockPos.x / CHUNK_WIDTH), Mathf.FloorToInt(blockPos.z / CHUNK_WIDTH));        
         Chunk chunk = allBlocks[chunkPos];
-        Vector3 localPos = GlobalToChunkGrid(blockPos);
-        Debug.Log("SetBlock() at location " + localPos);
+        Vector3 localPos = GlobalToChunkGrid(blockPos);        
         int segment = (int)(blockPos.y / CHUNK_HEIGHT);
 
         if (blockID == 0)
@@ -315,20 +314,12 @@ public class Chunk : MonoBehaviour {
         
         int segment = (int)(pos.y  / CHUNK_HEIGHT);
         if (chunkSegments.Count < segment) return 0;
-        Vector3 localPos = GlobalToChunkGrid(pos);
-        Debug.Log("Chunk.GetBlock() segment: " + segment);
-        Debug.Log("Global: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
-        Debug.Log("Local: (" + (int)localPos.x + ", " + (int)localPos.y + ", " + (int)localPos.z + ")");
-        if (segment < 0 || segment >= chunkSegments.Count)
-        {
-            Debug.Log("Segment error");
+        Vector3 localPos = GlobalToChunkGrid(pos);        
+        if (segment < 0 || segment >= chunkSegments.Count)                    
             return 0;
-        }
-        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null)
-        {
-            Debug.Log("block at that location is air (0)");
-            //return 0;
-        }
+        
+        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null)                    
+            return 0;        
         
         return chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z].blockID;
         
