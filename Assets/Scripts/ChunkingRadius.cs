@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ChunkingRadius : MonoBehaviour {
     [SerializeField]
-    public float chunkRadius = 1.0f;	
+    public float chunkRadius = 2.0f;	
 
 
     private void Awake()
@@ -18,13 +18,13 @@ public class ChunkingRadius : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        Vector2 centerChunkPos = new Vector2((int)(transform.position.x / Chunk.CHUNK_WIDTH), (int)(transform.position.y / Chunk.CHUNK_WIDTH));
-        for (int i = (int)Mathf.Abs(centerChunkPos.x) - (int)chunkRadius; i < (int)centerChunkPos.x + chunkRadius; ++i)
+        Vector2 centerChunkPos = new Vector2((int)(transform.position.x / Chunk.CHUNK_WIDTH), (int)(transform.position.z / Chunk.CHUNK_WIDTH));
+        for (int i = (int)centerChunkPos.x - (int)chunkRadius; i < (int)centerChunkPos.x + chunkRadius; ++i)
         {
-            for (int j = (int)Mathf.Abs(centerChunkPos.y) - (int)chunkRadius; j < (int)centerChunkPos.y + chunkRadius; ++j)
+            for (int j = (int)centerChunkPos.y - (int)chunkRadius; j < (int)centerChunkPos.y + chunkRadius; ++j)
             {
                 Vector2 targetChunk = new Vector2(i, j);
-                float distance = Mathf.Sqrt(Mathf.Pow(targetChunk.x - centerChunkPos.x, 2) + Mathf.Pow(targetChunk.x - centerChunkPos.x, 2));
+                float distance = Mathf.Sqrt(Mathf.Pow(targetChunk.x - centerChunkPos.x, 2) + Mathf.Pow(targetChunk.y - centerChunkPos.y, 2));
                 if (distance > chunkRadius) continue;
                 if (Chunk.allBlocks.ContainsKey(targetChunk)) continue;  //allready present
                 //generate chunk
