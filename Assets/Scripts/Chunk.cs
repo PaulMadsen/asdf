@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class Chunk : MonoBehaviour {
 
     public const int CHUNK_PIECES = 8; //total virtical chunk pieces in a chunk
     public const int CHUNK_WIDTH = 16;
     public const int CHUNK_HEIGHT = 16;  //virtical blocks per chunk piece
-    private List<BlockPair[,,]> chunkSegments = new List<BlockPair[,,]>();
+    private List<BlockPair[,,]> chunkSegments = null;
     public bool[] meshDirty = new bool[CHUNK_PIECES]; //mesh needs (re)generated?
     //each virtical chunk piece has meshes, verts, triangles and UVs
     private List<MeshFilter> meshes = new List<MeshFilter>(new MeshFilter[CHUNK_PIECES]);
@@ -19,38 +20,81 @@ public class Chunk : MonoBehaviour {
     public static Dictionary<Vector2, Chunk> allBlocks = new Dictionary<Vector2, Chunk>();
 
     void Start () {        
-        System.Random randy = new System.Random();
-        for (int i = 0; i < CHUNK_PIECES; ++i)
+        
+        for (int i = 0; i < CHUNK_PIECES; ++i) //setup GameObject's meshes, colliders, etc
         {
-            chunkSegments.Add(new BlockPair[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
             GameObject chunkPiece = new GameObject("Chunk Piece " + i);
             meshes[i] = chunkPiece.AddComponent<MeshFilter>();
             MeshRenderer mr = chunkPiece.AddComponent<MeshRenderer>();
             colliders[i] = chunkPiece.AddComponent<MeshCollider>();
             mr.material = World.mats;
             chunkPiece.transform.position = new Vector3(transform.position.x, i * CHUNK_HEIGHT, transform.position.z);
-            chunkPiece.transform.SetParent(this.transform);
+            chunkPiece.transform.SetParent(this.transform);            
+        }
+        GenerateTerrain();
+        //foreach (var segment in chunkSegments)
+        for (int i = 0; i < meshDirty.Length; ++i)
             meshDirty[i] = true;
+	}
+        
+    /// <summary>
+    /// Loads terrain from disk into memory
+    /// The stream's seek position must be set the the beginning of terrain data
+    /// </summary>
+    /// <param name="binaryReader"></param>
+    static void LoadTerrain(BinaryReader binaryReader)
+    {
+        List<BlockPair[,,]> segments = new List<BlockPair[,,]>();
+        while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
+        {
+            BlockPair[,,] segment = new BlockPair[Chunk.CHUNK_WIDTH, Chunk.CHUNK_HEIGHT, Chunk.CHUNK_WIDTH];
+            segments.Add(segment);
+            for (int i = 0; i < CHUNK_WIDTH; ++i)
+                for (int j = 0; j < CHUNK_HEIGHT; ++j)
+                    for (int k = 0; k < CHUNK_WIDTH; ++k) {
+                        int blockID = binaryReader.Read();
+                        int meta = binaryReader.Read(); //this will change When MetaInfo class is implemented
+                        segment[i, j, k] = new BlockPair(blockID, meta);
+                    }
+        }
+        
+    }
+
+    /// <summary>
+    /// Very basic random terrain generation
+    /// Sets the chunk's terrain data and also returns the terrain
+    /// </summary>    
+    public List<BlockPair[,,]> GenerateTerrain()
+    {
+        List<BlockPair[,,]> segments = new List<BlockPair[,,]>();
+        System.Random randy = new System.Random();
+        for (int i = 0; i < CHUNK_PIECES; ++i)
+        {
+            segments.Add(new BlockPair[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
+            GameObject chunkPiece = new GameObject("Chunk Piece " + i);                                    
 
             //generate default terrain
-            for (int x = 0; x < CHUNK_WIDTH; ++x)           
-                for (int y = 0; y < CHUNK_HEIGHT; ++y) {                    
+            for (int x = 0; x < CHUNK_WIDTH; ++x)
+                for (int y = 0; y < CHUNK_HEIGHT; ++y)
+                {
                     for (int z = 0; z < CHUNK_WIDTH; ++z)
                     {
                         if (i > 1) continue; // chunkSegments[i][x, y, z] = new BlockPair(0);
-                        if (i == 1 && y == 6) {
+                        if (i == 1 && y == 6)
+                        {
 
-                            if (randy.Next(0, 100) == 1) chunkSegments[i][x, y, z] = new BlockPair(1);
+                            if (randy.Next(0, 100) == 1) segments[i][x, y, z] = new BlockPair(1);
                         }
 
                         if (i == 1 && y > 5)
                             continue; // chunkSegments[i][x, y, z] = new BlockPair(0); //cutting it short here
-                        chunkSegments[i][x, y, z] = new BlockPair(1);
+                        segments[i][x, y, z] = new BlockPair(1);
                     }
                 }
         }
-
-	}
+        chunkSegments = segments;
+        return segments;
+    }
 
     public static Vector3 GlobalToChunkGrid(Vector3 vec)
     {        

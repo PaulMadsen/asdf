@@ -8,8 +8,8 @@ using UnityEngine;
 public class BlockPair
 {    
     public int blockID;
-    public BlockMeta meta;
-    public BlockPair(int blockID, BlockMeta meta = null)
+    public int meta; //placeholder, change to BlockMeta when its implemented
+    public BlockPair(int blockID, int meta = 0)
     {
         this.blockID = blockID;
         this.meta = meta;
