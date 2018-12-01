@@ -18,6 +18,7 @@ public class BlockSelectorButton : MonoBehaviour {
 	}
     void ButtonClicked()
     {
-        Debug.Log(button.GetComponentInChildren<Text>().text + " was clicked, ID: "+ blockID);
+        //Debug.Log(button.GetComponentInChildren<Text>().text + " was clicked, ID: "+ blockID);
+        BlockController.currentBlockID = blockID;
     }
 }

@@ -7,6 +7,7 @@ public class BlockController : MonoBehaviour {
     public LayerMask lm;
     public GameObject bhPrefab;
     GameObject bh; //blockhighlighter
+    public static int currentBlockID = 0;
 
 
     void Awake()
@@ -34,13 +35,12 @@ public class BlockController : MonoBehaviour {
                     }
                 }
                 if (Input.GetMouseButtonDown(1))
-                {
-                    blockPos += new Vector3(0, 0, 0); 
+                {                    
+                    blockPos += hit.normal; //block location in front of raycast hit
                     int blockID = World.GetBlock(blockPos);                
-                    if (blockID != 0)
-                    {
-                        Chunk.SetBlock(blockPos, 3);
-                    }
+                    //if (blockID != 0)                    
+                    Chunk.SetBlock(blockPos, currentBlockID);
+                    
                 }
             }
         }

@@ -13,7 +13,7 @@ public class BlockSelectorPreview : MonoBehaviour
     public float spaceBetween = 50.0f;
     public float cubeSize = 100.0f;
     [SerializeField]
-    Button buttonPrefab;    
+    Button buttonPrefab;     
    
 
     void Start () {
