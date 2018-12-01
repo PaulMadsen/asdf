@@ -19,8 +19,10 @@ public class Chunk : MonoBehaviour {
     private List<List<Vector2>> uvs = new List<List<Vector2>>(new List<Vector2>[CHUNK_PIECES]);
     public static Dictionary<Vector2, Chunk> allBlocks = new Dictionary<Vector2, Chunk>();
 
-    void Start () {        
-        
+    void Start () {	}
+
+    public void Init(ref BinaryReader reader, bool onDisk)
+    {
         for (int i = 0; i < CHUNK_PIECES; ++i) //setup GameObject's meshes, colliders, etc
         {
             GameObject chunkPiece = new GameObject("Chunk Piece " + i);
@@ -29,20 +31,28 @@ public class Chunk : MonoBehaviour {
             colliders[i] = chunkPiece.AddComponent<MeshCollider>();
             mr.material = World.mats;
             chunkPiece.transform.position = new Vector3(transform.position.x, i * CHUNK_HEIGHT, transform.position.z);
-            chunkPiece.transform.SetParent(this.transform);            
+            chunkPiece.transform.SetParent(this.transform);
         }
-        GenerateTerrain();
-        //foreach (var segment in chunkSegments)
-        for (int i = 0; i < meshDirty.Length; ++i)
-            meshDirty[i] = true;
-	}
-        
+
+        //Load terrain from file or generate it
+        if (!onDisk)
+            GenerateTerrain();
+        else        
+            LoadChunk(ref reader);
+        MarkAllDirty();
+    }
+
+    void MarkAllDirty()
+    {
+        for (int i = 0; i < meshDirty.Length; ++i) meshDirty[i] = true;
+    }
+
     /// <summary>
     /// Loads terrain from disk into memory
     /// The stream's seek position must be set the the beginning of terrain data
     /// </summary>
     /// <param name="binaryReader"></param>
-    static void LoadTerrain(BinaryReader binaryReader)
+    static void LoadChunk(ref BinaryReader binaryReader)
     {
         List<BlockPair[,,]> segments = new List<BlockPair[,,]>();
         while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
@@ -60,6 +70,19 @@ public class Chunk : MonoBehaviour {
         
     }
 
+    void SaveChunk(BinaryWriter br)
+    {
+        foreach (BlockPair[,,] segment in chunkSegments)
+        {
+            foreach (BlockPair bp in segment)
+            {
+                br.Write(bp.blockID);
+                br.Write(bp.meta);
+            }
+        }
+    }
+    
+
     /// <summary>
     /// Very basic random terrain generation
     /// Sets the chunk's terrain data and also returns the terrain
@@ -71,8 +94,6 @@ public class Chunk : MonoBehaviour {
         for (int i = 0; i < CHUNK_PIECES; ++i)
         {
             segments.Add(new BlockPair[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH]);
-            GameObject chunkPiece = new GameObject("Chunk Piece " + i);                                    
-
             //generate default terrain
             for (int x = 0; x < CHUNK_WIDTH; ++x)
                 for (int y = 0; y < CHUNK_HEIGHT; ++y)

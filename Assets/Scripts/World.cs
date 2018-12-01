@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 
 public class World : MonoBehaviour {
     private static int WIDTH = 16;
@@ -10,6 +11,8 @@ public class World : MonoBehaviour {
     [SerializeField]
     public Material mat; //plug-in in unity GUI
     public static Material mats; //script uses this one    
+
+    public static string saveFile = "safeFile";
 
     // Use this for initialization
     void Start () {        
@@ -26,14 +29,21 @@ public class World : MonoBehaviour {
     /// <param name="y">coordinate</param>
     public static void InstantiateChunk(int x, int z)
     {
-        GameObject chunk = new GameObject("Chunk " + "(" + x + "," + z + ")");
-        Chunk c = chunk.AddComponent<Chunk>();
-        chunk.transform.parent = self;
-        chunk.transform.position = new Vector3(x * WIDTH, 0, z * WIDTH);
+        GameObject chunkStack = new GameObject("Chunk " + "(" + x + "," + z + ")");
+        Chunk chunk = chunkStack.AddComponent<Chunk>();
+        BinaryReader reader = new BinaryReader(new FileStream(saveFile, FileMode.Open, FileAccess.Read, FileShare.Read));
+        if (ChunkExistsOnDisk(ref reader, x, z)) { 
+            chunk.Init(ref reader, true);
+            reader.Close();
+        }
+        else
+            chunk.Init(ref reader, false);
+        chunkStack.transform.parent = self;
+        chunkStack.transform.position = new Vector3(x * WIDTH, 0, z * WIDTH);
         Vector2 cPos = new Vector2(x, z);
-        Chunk.allBlocks.Add(cPos, c);
-        chunk.AddComponent<MeshFilter>();
-        chunk.AddComponent<MeshRenderer>();
+        Chunk.allBlocks.Add(cPos, chunk);
+        chunkStack.AddComponent<MeshFilter>();
+        chunkStack.AddComponent<MeshRenderer>();
     }
 
     void Awake()
@@ -46,16 +56,6 @@ public class World : MonoBehaviour {
         Block.BlockInfo.Add(6, new Block(3, 14, "bedrock"));
         mats = mat;
         self = transform;
-
-        /*for (int chunkX = 0; chunkX < WIDTH; ++chunkX)
-        {
-            for (int chunkZ = 0; chunkZ < WIDTH; ++chunkZ)
-            {
-                InstantiateChunk(chunkX, chunkZ);
-            }
-        }*/
-
-        
     }
 	
 	// Update is called once per frame
@@ -67,4 +67,27 @@ public class World : MonoBehaviour {
         if (!Chunk.allBlocks.ContainsKey(chunkPos)) return 0;
         return Chunk.allBlocks[chunkPos].GetBlock(pos);
     }
+
+    /// <summary>
+    /// The BinaryWriter's internal read head will be set to the beginning of data or garbage if the chunk is not found    /// 
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns>True if the chunk exists on disk</returns>
+    static private bool ChunkExistsOnDisk(ref BinaryReader br, int xCoord, int yCoord)
+    {
+        br.BaseStream.Seek(0, SeekOrigin.Begin);
+        int index = 0;
+        int chunkSize = (Chunk.CHUNK_WIDTH * Chunk.CHUNK_HEIGHT * Chunk.CHUNK_WIDTH * Chunk.CHUNK_PIECES) + 2 * sizeof(int);
+
+        while (br.BaseStream.Position < br.BaseStream.Length)
+        {
+            long seekPos = br.BaseStream.Seek(index * chunkSize, SeekOrigin.Begin);
+            int x = br.Read();
+            int y = br.Read();
+            if (x != xCoord && y != yCoord) continue;
+            return true;
+        }
+        return false;
+    }
+
 }
