@@ -63,6 +63,7 @@
      <Compile Include="Assets\Scripts\GUIstate.cs" />
      <Compile Include="Assets\Scripts\Highlighter.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\SaveTrigger.cs" />
      <Compile Include="Assets\Scripts\VirticalLook.cs" />
      <Compile Include="Assets\Scripts\World.cs" />
      <None Include="Assets\Textures\GUI.shader" />

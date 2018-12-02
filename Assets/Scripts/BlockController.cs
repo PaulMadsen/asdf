@@ -37,7 +37,7 @@ public class BlockController : MonoBehaviour {
                 if (Input.GetMouseButtonDown(1))
                 {                    
                     blockPos += hit.normal; //block location in front of raycast hit
-                    int blockID = World.GetBlock(blockPos);                
+                    //int blockID = World.GetBlock(blockPos);                
                     //if (blockID != 0)                    
                     Chunk.SetBlock(blockPos, currentBlockID);
                     

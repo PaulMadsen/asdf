@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
 public class Chunk : MonoBehaviour {
 
     public const int CHUNK_PIECES = 8; //total virtical chunk pieces in a chunk
@@ -18,6 +19,7 @@ public class Chunk : MonoBehaviour {
     private List<List<int>> triangles = new List<List<int>>(new List<int>[CHUNK_PIECES]);
     private List<List<Vector2>> uvs = new List<List<Vector2>>(new List<Vector2>[CHUNK_PIECES]);
     public static Dictionary<Vector2, Chunk> allBlocks = new Dictionary<Vector2, Chunk>();
+    
 
     void Start () {	}
 
@@ -35,8 +37,9 @@ public class Chunk : MonoBehaviour {
         }
 
         //Load terrain from file or generate it
-        if (!onDisk)
-            GenerateTerrain();
+        if (!onDisk) { 
+            GenerateTerrain();            
+        }
         else        
             LoadChunk(ref reader);
         MarkAllDirty();
@@ -52,34 +55,45 @@ public class Chunk : MonoBehaviour {
     /// The stream's seek position must be set the the beginning of terrain data
     /// </summary>
     /// <param name="binaryReader"></param>
-    static void LoadChunk(ref BinaryReader binaryReader)
+    void LoadChunk(ref BinaryReader binaryReader)
     {
         List<BlockPair[,,]> segments = new List<BlockPair[,,]>();
-        while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
+        for (int segNum=0; segNum < CHUNK_PIECES; ++segNum)
         {
             BlockPair[,,] segment = new BlockPair[Chunk.CHUNK_WIDTH, Chunk.CHUNK_HEIGHT, Chunk.CHUNK_WIDTH];
             segments.Add(segment);
             for (int i = 0; i < CHUNK_WIDTH; ++i)
                 for (int j = 0; j < CHUNK_HEIGHT; ++j)
                     for (int k = 0; k < CHUNK_WIDTH; ++k) {
-                        int blockID = binaryReader.Read();
-                        int meta = binaryReader.Read(); //this will change When MetaInfo class is implemented
-                        segment[i, j, k] = new BlockPair(blockID, meta);
+                        int blockID = binaryReader.ReadInt32();
+                        int meta = binaryReader.ReadInt32(); //this will change When MetaInfo class is implemented
+                        if (blockID != 0)
+                            segment[i, j, k] = new BlockPair(blockID, meta);
                     }
         }
-        
+        chunkSegments = segments;
     }
 
-    void SaveChunk(BinaryWriter br)
+    public void SaveChunk(ref BinaryWriter br)
     {
         foreach (BlockPair[,,] segment in chunkSegments)
         {
-            foreach (BlockPair bp in segment)
-            {
-                br.Write(bp.blockID);
-                br.Write(bp.meta);
-            }
+            for (int i=0; i< CHUNK_WIDTH; ++i)
+                for (int j=0; j< CHUNK_HEIGHT; ++j)
+                    for (int k=0; k<CHUNK_WIDTH; ++k)
+                    {
+                        if (segment[i, j, k] == null)
+                        {                            
+                            br.Write(0);
+                            br.Write(0);
+                            continue;                            
+                        }
+                        br.Write(segment[i, j, k].blockID);
+                        br.Write(segment[i, j, k].meta);
+                    }
         }
+        
+        Debug.Log("Chunk.SaveChunk finished saving.  Write head at location " + br.BaseStream.Position );
     }
     
 
