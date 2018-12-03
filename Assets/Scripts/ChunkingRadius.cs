@@ -18,17 +18,17 @@ public class ChunkingRadius : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        Vector2 centerChunkPos = new Vector2((int)(transform.position.x / Chunk.CHUNK_WIDTH), (int)(transform.position.z / Chunk.CHUNK_WIDTH));
-        for (int i = (int)centerChunkPos.x - (int)chunkRadius; i < (int)centerChunkPos.x + chunkRadius; ++i)
+        Vector2 centerChunkPos = new Vector2(Mathf.FloorToInt(transform.position.x / Chunk.CHUNK_WIDTH), Mathf.FloorToInt(transform.position.z / Chunk.CHUNK_WIDTH));
+        for (int i = Mathf.FloorToInt(centerChunkPos.x) - Mathf.FloorToInt(chunkRadius); i < Mathf.FloorToInt(centerChunkPos.x) + chunkRadius; ++i)
         {
-            for (int j = (int)centerChunkPos.y - (int)chunkRadius; j < (int)centerChunkPos.y + chunkRadius; ++j)
+            for (int j = Mathf.FloorToInt(centerChunkPos.y) - Mathf.FloorToInt(chunkRadius); j < Mathf.FloorToInt(centerChunkPos.y) + chunkRadius; ++j)
             {
                 Vector2 targetChunk = new Vector2(i, j);
                 float distance = Mathf.Sqrt(Mathf.Pow(targetChunk.x - centerChunkPos.x, 2) + Mathf.Pow(targetChunk.y - centerChunkPos.y, 2));
                 if (distance > chunkRadius) continue;
                 if (Chunk.allBlocks.ContainsKey(targetChunk)) continue;  //allready present
                 //generate chunk
-                World.InstantiateChunk((int)targetChunk.x, (int)targetChunk.y);
+                World.InstantiateChunk(Mathf.FloorToInt(targetChunk.x), Mathf.FloorToInt(targetChunk.y));
             }
         }
     }

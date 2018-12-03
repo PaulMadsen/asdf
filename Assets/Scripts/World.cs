@@ -35,16 +35,15 @@ public class World : MonoBehaviour {
         GameObject chunkStack = new GameObject("Chunk " + "(" + x + "," + z + ")");
         Chunk chunk = chunkStack.AddComponent<Chunk>();
         BinaryReader reader = new BinaryReader(new FileStream(saveFile, FileMode.Open, FileAccess.Read , FileShare.Read));
-        if (ChunkExistsOnDisk(ref reader, x, z)) {
-            Debug.Log("Loading chunk " + x + "," + z + " from disk");
+        if (ChunkExistsOnDisk(ref reader, x, z)) {            
             chunk.Init(ref reader, true);
-            Debug.Log("Fin     chunk " + x + "," + z + " from disk, head at " + reader.BaseStream.Position);
-            reader.Close();
+            Debug.Log("Fin     chunk " + x + "," + z + " from disk, head at " + reader.BaseStream.Position);            
         }
         else {
             Debug.Log("Generating chunk " + x + "," + z);
             chunk.Init(ref reader, false);
         }
+        reader.Close();
         chunkStack.transform.parent = self;
         chunkStack.transform.position = new Vector3(x * WIDTH, 0, z * WIDTH);
         Vector2 cPos = new Vector2(x, z);
@@ -81,20 +80,26 @@ public class World : MonoBehaviour {
     /// <param name="reader"></param>
     /// <returns>True if the chunk exists on disk</returns>
     static private bool ChunkExistsOnDisk(ref BinaryReader br, int xCoord, int yCoord)
-    {
-        br.BaseStream.Seek(0, SeekOrigin.Begin);
+    {        
         int index = 0;
-        int chunkSize = ((Chunk.CHUNK_WIDTH * Chunk.CHUNK_HEIGHT * Chunk.CHUNK_WIDTH * Chunk.CHUNK_PIECES) * 2 + 2 ) * sizeof(int);
+        int chunkSize = ((Chunk.CHUNK_WIDTH * Chunk.CHUNK_HEIGHT * Chunk.CHUNK_WIDTH * Chunk.CHUNK_PIECES) * 2 +2) * sizeof(int);
 
-        while (br.BaseStream.Position < br.BaseStream.Length)
+        while (br.BaseStream.Position <= br.BaseStream.Length)
         {
-            br.BaseStream.Seek(index++ * chunkSize, SeekOrigin.Begin);
+            br.BaseStream.Seek(index * chunkSize, SeekOrigin.Begin);
+            if (br.BaseStream.Position >= br.BaseStream.Length) break;
             int x = br.ReadInt32();
             int y = br.ReadInt32();
-            if (x != xCoord && y != yCoord) continue;
-            return true;
+            bool found = (x == xCoord && y == yCoord);
+            Debug.Log(x+","+y+" == " + xCoord + "," + yCoord + "?  " + found);
+            if (found)
+            {
+                return true;
+            }
+            ++index;
         }
         return false;
     }
 
+    
 }

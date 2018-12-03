@@ -139,7 +139,7 @@ public class Chunk : MonoBehaviour {
             localX += CHUNK_WIDTH;
         if (localZ < 0)
             localZ += CHUNK_WIDTH;
-        return new Vector3(localX, (int)(vec.y % CHUNK_HEIGHT), localZ);
+        return new Vector3(localX, Mathf.FloorToInt(vec.y % CHUNK_HEIGHT), localZ);
     }
 
     public static void SetBlock(Vector3 blockPos, int blockID)
@@ -147,12 +147,12 @@ public class Chunk : MonoBehaviour {
         Vector2 chunkPos = new Vector2(Mathf.FloorToInt(blockPos.x / CHUNK_WIDTH), Mathf.FloorToInt(blockPos.z / CHUNK_WIDTH));        
         Chunk chunk = allBlocks[chunkPos];
         Vector3 localPos = GlobalToChunkGrid(blockPos);        
-        int segment = (int)(blockPos.y / CHUNK_HEIGHT);
+        int segment = Mathf.FloorToInt(blockPos.y / CHUNK_HEIGHT);
 
         if (blockID == 0)
-            chunk.chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] = null;
+            chunk.chunkSegments[segment][Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y), Mathf.FloorToInt(localPos.z)] = null;
         else
-            chunk.chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] = new BlockPair(blockID);
+            chunk.chunkSegments[segment][Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y), Mathf.FloorToInt(localPos.z)] = new BlockPair(blockID);
 
         
         chunk.meshDirty[segment] = true; 
@@ -391,16 +391,16 @@ public class Chunk : MonoBehaviour {
     public int GetBlock(Vector3 pos)
     {
         
-        int segment = (int)(pos.y  / CHUNK_HEIGHT);
+        int segment = Mathf.FloorToInt(pos.y  / CHUNK_HEIGHT);
         if (chunkSegments.Count < segment) return 0;
         Vector3 localPos = GlobalToChunkGrid(pos);        
         if (segment < 0 || segment >= chunkSegments.Count)                    
             return 0;
         
-        if (chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z] == null)                    
+        if (chunkSegments[segment][Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y), Mathf.FloorToInt(localPos.z)] == null)                    
             return 0;        
         
-        return chunkSegments[segment][(int)localPos.x, (int)localPos.y, (int)localPos.z].blockID;
+        return chunkSegments[segment][Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y), Mathf.FloorToInt(localPos.z)].blockID;
         
         
     }
