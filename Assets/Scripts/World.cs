@@ -21,8 +21,7 @@ public class World : MonoBehaviour {
             fs = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs.Close();
         }
-
-
+        Cursor.visible = false;
     }
 
     /// <summary>
@@ -36,11 +35,9 @@ public class World : MonoBehaviour {
         Chunk chunk = chunkStack.AddComponent<Chunk>();
         BinaryReader reader = new BinaryReader(new FileStream(saveFile, FileMode.Open, FileAccess.Read , FileShare.Read));
         if (ChunkExistsOnDisk(ref reader, x, z)) {            
-            chunk.Init(ref reader, true);
-            Debug.Log("Fin     chunk " + x + "," + z + " from disk, head at " + reader.BaseStream.Position);            
+            chunk.Init(ref reader, true);            
         }
-        else {
-            Debug.Log("Generating chunk " + x + "," + z);
+        else {            
             chunk.Init(ref reader, false);
         }
         reader.Close();
@@ -90,8 +87,7 @@ public class World : MonoBehaviour {
             if (br.BaseStream.Position >= br.BaseStream.Length) break;
             int x = br.ReadInt32();
             int y = br.ReadInt32();
-            bool found = (x == xCoord && y == yCoord);
-            Debug.Log(x+","+y+" == " + xCoord + "," + yCoord + "?  " + found);
+            bool found = (x == xCoord && y == yCoord);            
             if (found)
             {
                 return true;

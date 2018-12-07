@@ -55,9 +55,6 @@ public class BlockSelectorPreview : MonoBehaviour
         }
         
         gameObject.SetActive(false);
-        
-        
-        
     }
 	
 	// Update is called once per frame

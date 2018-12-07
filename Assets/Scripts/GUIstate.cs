@@ -22,6 +22,15 @@ public class GUIstate : MonoBehaviour {
         {
             BlockSelectorGUI.SetActive(!BlockSelectorGUI.activeSelf);
             GUIActive = BlockSelectorGUI.activeSelf;
+            if (GUIActive)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else { 
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
     }
 }
