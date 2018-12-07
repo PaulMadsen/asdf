@@ -7,6 +7,8 @@ public class GUIstate : MonoBehaviour {
     [SerializeField]
     public GameObject BlockSelectorGUI;
     public static bool GUIActive = false;
+    [SerializeField]
+    GameObject mainMenuGUI;
 
     void Start()
     {
@@ -31,6 +33,13 @@ public class GUIstate : MonoBehaviour {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
+        }
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            Debug.Assert(mainMenuGUI != null);
+            Debug.Log("Escape pressed");
+            mainMenuGUI.SetActive(!mainMenuGUI.activeSelf);
+
         }
     }
 }

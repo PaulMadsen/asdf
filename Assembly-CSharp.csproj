@@ -65,6 +65,7 @@
      <Compile Include="Assets\Scripts\LoadTrigger.cs" />
      <Compile Include="Assets\Scripts\MainGUI.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\OverheadView.cs" />
      <Compile Include="Assets\Scripts\TriggerSave.cs" />
      <Compile Include="Assets\Scripts\VirticalLook.cs" />
      <Compile Include="Assets\Scripts\World.cs" />

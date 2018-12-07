@@ -5,11 +5,11 @@ using System.IO;
 
 public class MainGUI : MonoBehaviour {
 
-    // Use this for initialization
+    // Use this for initialization    
     [SerializeField]
     GameObject world;
 	void Start () {
-		
+        //gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
