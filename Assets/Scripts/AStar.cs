@@ -117,8 +117,7 @@ public class AStar : MonoBehaviour {
                     openSet.Enqueue(neighbor);
             }
 
-        }
-        Debug.Log("Stop Condition reached " + stopCondition);
+        }        
         return null;    
     }
 

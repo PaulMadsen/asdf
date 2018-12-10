@@ -72,6 +72,7 @@
      <Compile Include="Assets\Scripts\OverheadView.cs" />
      <Compile Include="Assets\Scripts\PriorityQueue.cs" />
      <Compile Include="Assets\Scripts\ScreenSelectorBox.cs" />
+     <Compile Include="Assets\Scripts\TerrainExplosion.cs" />
      <Compile Include="Assets\Scripts\TestGetNeighbors.cs" />
      <Compile Include="Assets\Scripts\TriggerSave.cs" />
      <Compile Include="Assets\Scripts\VirticalLook.cs" />
