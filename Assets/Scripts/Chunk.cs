@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEngine.AI;
 
 
 public class Chunk : MonoBehaviour {
@@ -19,7 +20,6 @@ public class Chunk : MonoBehaviour {
     private List<List<int>> triangles = new List<List<int>>(new List<int>[CHUNK_PIECES]);
     private List<List<Vector2>> uvs = new List<List<Vector2>>(new List<Vector2>[CHUNK_PIECES]);
     public static Dictionary<Vector2, Chunk> allBlocks = new Dictionary<Vector2, Chunk>();
-    
 
     void Start () {	}
 
@@ -232,9 +232,9 @@ public class Chunk : MonoBehaviour {
         m.uv = uvs[dirtyPiece].ToArray();
         m.RecalculateNormals();          
         meshes[dirtyPiece].mesh = m;
-        colliders[dirtyPiece].sharedMesh = m;    
-        
+        colliders[dirtyPiece].sharedMesh = m; 
         meshDirty[dirtyPiece] = false;
+        //World.navMeshDirty = true;
         
     }
 

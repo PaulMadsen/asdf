@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using UnityEngine.AI;
 
 public class World : MonoBehaviour {
     private static int WIDTH = 16;
-    public static Transform self;
-    
+    public static Transform self;    
+
     [SerializeField]
     public Material mat; //plug-in in unity GUI
     public static Material mats; //script uses this one    
-
     public static string saveFile = "saveFile";
+    //public static bool navMeshDirty = true;
+    //public static NavMeshSurface navMeshSurface;
 
     // Use this for initialization
     void Start () {
@@ -21,8 +23,8 @@ public class World : MonoBehaviour {
             fs = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs.Close();
         }
-        Cursor.visible = false;
     }
+    
 
     /// <summary>
     /// Loads or generates a entire chunk stack
@@ -63,8 +65,14 @@ public class World : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        /*if (navMeshDirty) { 
+            navMeshSurface = gameObject.AddComponent<NavMeshSurface>();
+            navMeshSurface.agentTypeID = 0; //humanoid?
+            navMeshSurface.collectObjects = CollectObjects.Children;
+            navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;            
+            navMeshSurface.BuildNavMesh();
+        }*/
+    }
     public static int GetBlock(Vector3 pos) {        
         Vector2 chunkPos = new Vector2(Mathf.Floor(pos.x / Chunk.CHUNK_WIDTH), Mathf.Floor(pos.z / Chunk.CHUNK_WIDTH));
         if (!Chunk.allBlocks.ContainsKey(chunkPos)) return 0;

@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AStar.cs" />
      <Compile Include="Assets\Scripts\BlockController.cs" />
      <Compile Include="Assets\Scripts\Blocks.cs" />
      <Compile Include="Assets\Scripts\BlockSelectorButton.cs" />
@@ -62,10 +63,15 @@
      <Compile Include="Assets\Scripts\ChunkingRadius.cs" />
      <Compile Include="Assets\Scripts\GUIstate.cs" />
      <Compile Include="Assets\Scripts\Highlighter.cs" />
+     <Compile Include="Assets\Scripts\Humanoid.cs" />
      <Compile Include="Assets\Scripts\LoadTrigger.cs" />
      <Compile Include="Assets\Scripts\MainGUI.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\OverheadGUI.cs" />
      <Compile Include="Assets\Scripts\OverheadView.cs" />
+     <Compile Include="Assets\Scripts\PriorityQueue.cs" />
+     <Compile Include="Assets\Scripts\ScreenSelectorBox.cs" />
+     <Compile Include="Assets\Scripts\TestGetNeighbors.cs" />
      <Compile Include="Assets\Scripts\TriggerSave.cs" />
      <Compile Include="Assets\Scripts\VirticalLook.cs" />
      <Compile Include="Assets\Scripts\World.cs" />
@@ -313,6 +319,12 @@
  <Reference Include="Boo.Lang">
  <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unity/Boo.Lang.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="NavMeshComponentsEditor.csproj">
+      <Project>{66FCF4C3-A5E4-280B-AA85-5580BF1F00FA}</Project>      <Name>NavMeshComponentsEditor</Name>    </ProjectReference>
+    <ProjectReference Include="NavMeshComponents.csproj">
+      <Project>{30C78986-A83F-C045-9F9A-7F9A31798523}</Project>      <Name>NavMeshComponents</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

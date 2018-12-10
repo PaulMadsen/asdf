@@ -400,3 +400,5 @@ C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\UnityEditor.iOS.Extensions.Xcode.
 C:\Users\paul\Documents\S3\asdf\obj\Debug\Assembly-CSharp-Editor.csprojResolveAssemblyReference.cache
 C:\Users\paul\Documents\S3\asdf\obj\Debug\Assembly-CSharp-Editor.dll
 C:\Users\paul\Documents\S3\asdf\obj\Debug\Assembly-CSharp-Editor.pdb
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\NavMeshComponentsEditor.pdb
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\NavMeshComponents.pdb

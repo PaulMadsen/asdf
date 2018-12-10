@@ -335,3 +335,7 @@ C:\Users\10220493\Documents\S3\obj\Debug\Assembly-CSharp.dll
 C:\Users\10220493\Documents\S3\obj\Debug\Assembly-CSharp.pdb
 C:\Users\10220493\Documents\S3\Temp\bin\Debug\UnityEditor.UI.dll
 C:\Users\10220493\Documents\S3\Temp\bin\Debug\UnityEditor.UI.xml
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\UnityEditor.UI.dll
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\NavMeshComponentsEditor.pdb
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\NavMeshComponents.pdb
+C:\Users\paul\Documents\S3\asdf\Temp\bin\Debug\UnityEditor.UI.xml

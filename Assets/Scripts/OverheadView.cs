@@ -8,6 +8,9 @@ public class OverheadView : MonoBehaviour {
     float moveSpeed = 10.0f;
     float mouseWheelMultiplier = 3;
     float shiftBoostSpeedMultiplier = 3;
+    [SerializeField]
+    public GameObject characterPrefab;
+    [SerializeField] GameObject mobContainer;
     // Use this for initialization
 	void Start () {
 		
@@ -30,6 +33,39 @@ public class OverheadView : MonoBehaviour {
             transform.Translate(0, moveSpeed * Time.deltaTime * mouseWheelMultiplier * shiftBoostSpeed, 0);
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
             transform.Translate(0, -moveSpeed * Time.deltaTime * mouseWheelMultiplier * shiftBoostSpeed, 0);
+        if (Input.GetKeyDown(KeyCode.I))
+            SpawnThing();
+        if (Input.GetKeyDown(KeyCode.P))
+            DamageThing();
+    }
 
+    
+
+    //prototype.  split up into constituent parts once working
+    public void SpawnThing()
+    {           
+        Debug.Assert(characterPrefab != null);
+        Camera cam = GetComponentInChildren<Camera>();
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit)){
+            GameObject go = Instantiate(characterPrefab, hit.point + hit.normal, transform.rotation);
+            go.transform.SetParent(mobContainer.transform);
+            //Destroy(go.GetComponent<Rigidbody>());
+        }
+
+    }
+
+    public void DamageThing()
+    {
+        Debug.Assert(characterPrefab != null);
+        Camera cam = GetComponentInChildren<Camera>();
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        GameObject go;
+        if (Physics.Raycast(ray, out hit) && (go = hit.transform.gameObject).GetComponent<Humanoid>() ) 
+        {
+            go.GetComponent<Humanoid>().healthPoints -= 11f;
+        }
     }
 }
