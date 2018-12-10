@@ -1529,7 +1529,6 @@ GameObject:
   - component: {fileID: 1773374900}
   - component: {fileID: 1773374902}
   - component: {fileID: 1773374903}
-  - component: {fileID: 1773374904}
   m_Layer: 0
   m_Name: OverheadView
   m_TagString: Untagged
@@ -1591,21 +1590,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selected: []
   population: {fileID: 110386110}
-  material: {fileID: 0}
---- !u!114 &1773374904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1773374899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bf7ad6cecae78243ac52426d1ebb6d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 1153889012}
-  DebugCanvas: {fileID: 223254575350303116, guid: ac426fc268b089d4baacefced203bc6e,
-    type: 2}
 --- !u!1 &1792325871
 GameObject:
   m_ObjectHideFlags: 0

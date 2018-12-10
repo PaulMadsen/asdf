@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\LoadTrigger.cs" />
      <Compile Include="Assets\Scripts\MainGUI.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\MoveAlongPath.cs" />
      <Compile Include="Assets\Scripts\OverheadGUI.cs" />
      <Compile Include="Assets\Scripts\OverheadView.cs" />
      <Compile Include="Assets\Scripts\PriorityQueue.cs" />

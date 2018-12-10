@@ -28,7 +28,6 @@ public class AStar : MonoBehaviour {
     }
     static public List<Vec3> GetNeihbors(Vec3 node)
     {
-        Vector3 center = node.theVector;
         List<Vec3> retVal = new List<Vec3>();
         Vector3 floor = new Vector3(0, -1, 0);
         Vector3 chest = new Vector3(0, 1, 0);
@@ -68,7 +67,8 @@ public class AStar : MonoBehaviour {
         return path;
     }
     public static List<Vector3> A_Star(Vector3 _start, Vector3 _end, Canvas debugCanvas = null)
-    {
+    {        
+        //wrappers
         Vec3 start = new Vec3(_start, 0);        
         Vec3 end = new Vec3(_end);        
 
@@ -88,12 +88,12 @@ public class AStar : MonoBehaviour {
         while (openSet.Count() != 0 && emergencyStopCount++ < stopCondition)
         {
             current = openSet.Dequeue();
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            /*GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.GetComponent<MeshRenderer>().material.color = Color.red;            
             go.transform.position = current.theVector + new Vector3(0.5f, 0.5f, 0.5f);
             go.transform.localScale *= .4f;
             
-            Destroy(go, 2);
+            Destroy(go, 2);*/
 
             if (current.theVector == end.theVector)
                 return ReconstructPath(cameFrom, current); 

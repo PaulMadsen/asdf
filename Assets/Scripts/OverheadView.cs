@@ -72,9 +72,24 @@ public class OverheadView : MonoBehaviour {
     void MoveUnits()
     {
         if (selectedUnits == null || selectedUnits.Count == 0) return;
-        foreach (GameObject go in selectedUnits)
-        {
-            
+        Camera cam = GetComponentInChildren<Camera>();
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit) && hit.transform.gameObject.name.Contains("Chunk")) {            
+            foreach (GameObject go in selectedUnits)
+            {
+                if (go == null) continue; //can be destroyed inbetween selection and move order  
+                var path = AStar.A_Star(new Vector3(Mathf.Floor(go.transform.position.x), Mathf.Floor(go.transform.position.y), Mathf.Floor(go.transform.position.z)),
+                    new Vector3(Mathf.Floor(hit.point.x), Mathf.Floor(hit.point.y), Mathf.Floor(hit.point.z)));
+                if (path == null) continue;                
+                MoveAlongPath script = go.GetComponent<MoveAlongPath>();
+                if (!script)
+                    script = go.AddComponent<MoveAlongPath>();
+                if (script == null)
+                    Debug.Log("SCript is null!");                
+                script.DoMove(path);
+                
+            }
         }
     }
 }
