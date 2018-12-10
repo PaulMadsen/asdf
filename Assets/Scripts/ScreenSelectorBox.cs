@@ -9,9 +9,7 @@ public class ScreenSelectorBox : MonoBehaviour {
     Vector2 boxEnd;
     public List<GameObject> selected;
     [SerializeField]
-    GameObject population;
-    [SerializeField]
-    Material material;
+    GameObject population;    
     
     // Use this for initialization
 	void Start () {
@@ -32,14 +30,17 @@ public class ScreenSelectorBox : MonoBehaviour {
             float yDist = Mathf.Abs(boxEnd.y - boxStart.y);
             Vector2 lowerLeft = new Vector2(Mathf.Min(boxStart.x, boxEnd.x), Mathf.Min(boxStart.y, boxEnd.y));
             Rect box = new Rect(lowerLeft, new Vector2(xDist, yDist));
+            List<GameObject> unitsFound = new List<GameObject>();            
             foreach (Transform child in population.transform)
             {
                 Vector3 screenPos = cam.WorldToScreenPoint(child.transform.position);
                 if (box.Contains(screenPos, true))
-                {                    
-                    Debug.Log(child.transform.position + " -> " + screenPos);
+                {
+                    unitsFound.Add(child.gameObject);                    
                 }
             }
+            if (unitsFound.Count != 0)
+                OverheadView.selectedUnits = unitsFound;
         }
 	}
 }

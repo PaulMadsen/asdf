@@ -8,10 +8,10 @@ public class OverheadView : MonoBehaviour {
     float moveSpeed = 10.0f;
     float mouseWheelMultiplier = 3;
     float shiftBoostSpeedMultiplier = 3;
-    [SerializeField]
-    public GameObject characterPrefab;
+    [SerializeField] GameObject characterPrefab;
     [SerializeField] GameObject mobContainer;
-    // Use this for initialization
+    public static List<GameObject> selectedUnits;
+    
 	void Start () {
 		
 	}
@@ -37,6 +37,8 @@ public class OverheadView : MonoBehaviour {
             SpawnThing();
         if (Input.GetKeyDown(KeyCode.P))
             DamageThing();
+        if (Input.GetMouseButtonDown(1))
+            MoveUnits();
     }
 
     
@@ -50,10 +52,8 @@ public class OverheadView : MonoBehaviour {
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit)){
             GameObject go = Instantiate(characterPrefab, hit.point + hit.normal, transform.rotation);
-            go.transform.SetParent(mobContainer.transform);
-            //Destroy(go.GetComponent<Rigidbody>());
+            go.transform.SetParent(mobContainer.transform);            
         }
-
     }
 
     public void DamageThing()
@@ -66,6 +66,15 @@ public class OverheadView : MonoBehaviour {
         if (Physics.Raycast(ray, out hit) && (go = hit.transform.gameObject).GetComponent<Humanoid>() ) 
         {
             go.GetComponent<Humanoid>().healthPoints -= 11f;
+        }
+    }
+
+    void MoveUnits()
+    {
+        if (selectedUnits == null || selectedUnits.Count == 0) return;
+        foreach (GameObject go in selectedUnits)
+        {
+            
         }
     }
 }
